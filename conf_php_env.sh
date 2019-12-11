@@ -4,7 +4,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt update -y
 apt upgrade -y
 
-apt install mariadb-server php-mysql -y
+apt install mariadb-server php php-mysql -y
 
 sudo service mysql start
 
@@ -14,5 +14,3 @@ FLUSH PRIVILEGES;
 CREATE DATABASE Books;
 EOF
 mysql -u root Books < Books.sql
-
-php -S localhost:8080
