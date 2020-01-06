@@ -1,33 +1,45 @@
 <?php
-$host = 'localhost';
-$db   = 'Books';
-$user = 'root';
-$pass = '';
-$charset = 'utf8mb4';
+require_once 'db_connection.php';
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset";
-$options = [
-    PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-    PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-    PDO::ATTR_EMULATE_PREPARES   => false,
-];
-try {
-     $pdo = new PDO($dsn, $user, $pass, $options);
-} catch (\PDOException $e) {
-     throw new \PDOException($e->getMessage(), (int)$e->getCode());
-}
+$year = $_GET['year'];
+$title = $_GET['title'];
 
 ?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Nimekiri</title>
+</head>
+<body>
+    <h2>Otsing</h2>
 
-<form mehtod="GET" action="/index.php">
-    <input type="text" name="year">
-</form>
+    <form mehtod="GET" action="/index.php">
+        <label for="year">Aasta</label>
+        <br>
+        <input type="text" name="year" value="<?=$year?>" style="margin-bottom: 4px;">
+        <br>
+        <label for="title">Pealkiri</label>
+        <br>
+        <input type="text" name="title" value="<?=$title?>" style="margin-bottom: 4px;">
+        <br>
+        <input type="submit" value="Otsi">
+    </form>
 
 <?php
 
-$stmt = $pdo->prepare('SELECT * FROM books WHERE release_date LIKE :year');
-$stmt->execute(['year' => 2000]);
+$stmt = $pdo->prepare('SELECT * FROM books WHERE release_date LIKE :year AND title LIKE :title');
+$stmt->execute(['year' => '%' . $year . '%', 'title' => '%' . $title . '%']);
 
+echo '<ul>';
 while ( $row = $stmt->fetch() ) {
-    echo $row['title'] . '<br>';
+    echo '<li><a href="./book.php?id=' . $row['id'] . '">' . $row['title'] . '</a></li>';
 }
+echo '</ul>';
+
+?>
+    
+</body>
+</html>
